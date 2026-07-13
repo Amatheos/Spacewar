@@ -78,3 +78,12 @@ target_compile_definitions(Spacewar PRIVATE
   SPACEWAR_OPTIONS_PATH="${CMAKE_SOURCE_DIR}/data/options.json"
   SPACEWAR_FONT_PATH="${CMAKE_SOURCE_DIR}/data/home-video.regular.ttf"
   SPACEWAR_DATA_DIR="${CMAKE_SOURCE_DIR}/data/")
+
+if(MSVC)
+  target_link_options(Spacewar PRIVATE
+    $<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS>
+    $<$<CONFIG:Release>:/ENTRY:mainCRTStartup>)
+elseif(WIN32)
+  target_link_options(Spacewar PRIVATE
+    $<$<CONFIG:Release>:-mwindows>)
+endif()
