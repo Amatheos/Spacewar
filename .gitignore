@@ -1,4 +1,5 @@
-# Build output
+/docs/
+
 /build/
 /out/
 /cmake-build-*/
@@ -6,13 +7,8 @@
 CMakeUserPresets.json
 *.user
 
-/docs/
-/ARCHITECTURE.md
-
-# Runtime-written player options (regenerated on first save)
 /data/options.json
 
-# OS / editor
 /.vscode/
 .DS_Store
 Thumbs.db
