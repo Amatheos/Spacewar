@@ -2,6 +2,7 @@
 
 /build/
 /out/
+/.cache/
 /cmake-build-*/
 /.vs/
 CMakeUserPresets.json
