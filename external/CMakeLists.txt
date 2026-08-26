@@ -39,14 +39,16 @@ FetchContent_Declare(rapidjson
 
 FetchContent_MakeAvailable(glfw stb miniaudio rapidjson)
 
+# SYSTEM: these headers are compiled into our TUs but are not ours to fix, so
+# their warnings must not reach our -Werror. Marks them -isystem, not -I.
 add_library(stb INTERFACE)
-target_include_directories(stb INTERFACE "${stb_SOURCE_DIR}")
+target_include_directories(stb SYSTEM INTERFACE "${stb_SOURCE_DIR}")
 
 add_library(miniaudio INTERFACE)
-target_include_directories(miniaudio INTERFACE "${miniaudio_SOURCE_DIR}")
+target_include_directories(miniaudio SYSTEM INTERFACE "${miniaudio_SOURCE_DIR}")
 
 add_library(rapidjson INTERFACE)
-target_include_directories(rapidjson INTERFACE "${rapidjson_SOURCE_DIR}/include")
+target_include_directories(rapidjson SYSTEM INTERFACE "${rapidjson_SOURCE_DIR}/include")
 
 # --- GLAD (in-tree generated OpenGL 3.3 Core loader) --------------------------
 add_subdirectory(glad)

@@ -1,7 +1,7 @@
 #include "sim/world.h"
 
-#include <algorithm>
 #include <cassert>
+#include <vector>
 
 #include "sim/settings.h"
 
@@ -136,9 +136,7 @@ void World::SimulationStep(float dt, const GameInput& in) {
 
   ResolveCollisions();
 
-  torpedoes_.erase(std::remove_if(torpedoes_.begin(), torpedoes_.end(),
-                                  [](const Torpedo& t) { return !t.alive(); }),
-                   torpedoes_.end());
+  std::erase_if(torpedoes_, [](const Torpedo& t) { return !t.alive(); });
 
   match_timer_ -= dt;
   bool round_over = !ships_[idx(Player::Needle)].alive() ||

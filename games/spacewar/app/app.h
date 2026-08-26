@@ -26,9 +26,6 @@ struct MenuInput {
   bool debug = false;
 };
 
-// The application: owns the resident World, the views, audio, and the menu
-// state machine. main drives it via Update/BuildInto and owns only the window
-// and renderer.
 class App {
  public:
   App(const sim::SimSettings& settings, const AppOptions& options,

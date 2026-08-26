@@ -1,6 +1,6 @@
 /docs/
-
 /build/
+/compile_commands.json
 /out/
 /.cache/
 /cmake-build-*/
@@ -13,3 +13,6 @@ CMakeUserPresets.json
 /.vscode/
 .DS_Store
 Thumbs.db
+/traces/
+/profile.json
+/tools/

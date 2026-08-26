@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "engine/core/math.h"
+#include "sim/events.h"
 #include "sim/input.h"
 #include "sim/player.h"
 #include "sim/ship.h"
@@ -15,22 +16,6 @@
 namespace spacewar::sim {
 
 struct SimSettings;
-
-struct GameEvent {
-  enum class Kind {
-    TorpedoFired,
-    TorpedoDetonated,
-    TorpedoExpired,
-    ShipExploded,
-    HyperspaceDepart,
-    HyperspaceArrive,
-    CountdownTick,
-    CountdownGo
-  };
-  Kind kind;
-  se::Vec2 pos;
-  se::Vec2 vel;
-};
 
 class World {
  public:

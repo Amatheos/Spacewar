@@ -14,13 +14,15 @@ namespace audio {
 class Engine;
 }
 
-namespace platform {
-class Window;
-}
+class Display {
+ public:
+  virtual ~Display() = default;
+  virtual void SetFullscreen(bool) = 0;
+};
 
 struct Services {
   audio::Engine& audio;
-  platform::Window& window;
+  Display& display;
 };
 
 class Game {

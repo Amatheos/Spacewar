@@ -1,6 +1,7 @@
 #include "spacewar_game.h"
 
-#include "engine/platform/window.h"
+#include "engine/core/input.h"
+
 
 namespace spacewar {
 
@@ -49,8 +50,8 @@ bool SpacewarGame::Init(se::Services& svs) {
 
   app_.emplace(settings, options, svs.audio);
   app_->SetFullscreenHandler(
-      [&window = svs.window](bool on) { window.SetFullscreen(on); });
-  svs.window.SetFullscreen(options.fullscreen);
+      [d = &svs.display](bool on) { d->SetFullscreen(on); });
+  svs.display.SetFullscreen(options.fullscreen);
   return true;
 }
 

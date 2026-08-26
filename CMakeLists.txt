@@ -5,17 +5,30 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(NOT WIN32)
-  message(FATAL_ERROR "Spacewar targets Windows only.")
-endif()
 if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-  message(FATAL_ERROR
-    "Spacewar is x64 only; configure with an x64 generator/architecture "
-    "(e.g. -A x64).")
+  message(FATAL_ERROR "Spacewar is 64-bit only.")
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
+# Warning policy. Linked PRIVATE by our own targets only -- never by fetched
+# dependencies, which are not ours to fix and would fail under -Werror.
+option(SE_WARNINGS_AS_ERRORS "Fail the build on any compiler warning" ON)
+
+add_library(se_warnings INTERFACE)
+target_compile_options(se_warnings INTERFACE
+  -Wall
+  -Wextra
+  -Wpedantic
+  -Wshadow
+  -Wnon-virtual-dtor
+  -Woverloaded-virtual
+  -Wnull-dereference
+  -Wimplicit-fallthrough
+  -Wformat=2
+  $<$<BOOL:${SE_WARNINGS_AS_ERRORS}>:-Werror>)
+
 add_subdirectory(external)
 add_subdirectory(engine)
 add_subdirectory(games/spacewar)
+add_subdirectory(games/boids)

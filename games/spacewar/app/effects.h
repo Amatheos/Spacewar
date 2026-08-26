@@ -6,7 +6,7 @@
 
 #include "engine/core/math.h"
 #include "engine/render/frame.h"
-#include "sim/world.h"
+#include "sim/events.h"
 
 namespace spacewar::app {
 
@@ -19,9 +19,12 @@ class Effects {
 
  private:
   struct Particle {
-    se::Vec2 pos, vel;
-    float age, lifespan, radius;
-    se::Color color;
+    se::Vec2 pos{};
+    se::Vec2 vel{};
+    float age = 0.0f;
+    float lifespan = 0.0f;
+    float radius = 0.0f;
+    se::Color color{};
   };
   std::vector<Particle> particles_;
   std::mt19937 rng_;

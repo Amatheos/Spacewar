@@ -4,8 +4,8 @@
   "configurePresets": [
     {
       "name": "ninja",
-      "displayName": "Ninja (default compiler)",
-      "description": "Single-config build using whatever compiler is on PATH (GCC/Clang/MSVC).",
+      "displayName": "Ninja Debug",
+      "description": "-O0, asserts on. Correctness work. Never profile this.",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/ninja",
       "cacheVariables": {
@@ -14,17 +14,25 @@
       }
     },
     {
-      "name": "vs2022",
-      "displayName": "Visual Studio 2022 (x64)",
-      "description": "MSVC multi-config generator; used by VS 2022 Open Folder.",
-      "generator": "Visual Studio 17 2022",
-      "architecture": "x64",
-      "binaryDir": "${sourceDir}/build/vs"
+      "name": "ninja-reldbg",
+      "displayName": "Ninja RelWithDebInfo (profiling)",
+      "description": "-O2 -g. The build every measurement is taken on.",
+      "inherits": "ninja",
+      "binaryDir": "${sourceDir}/build/ninja-reldbg",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
+    },
+    {
+      "name": "ninja-release",
+      "displayName": "Ninja Release",
+      "description": "-O3, no symbols. Shipping builds only.",
+      "inherits": "ninja",
+      "binaryDir": "${sourceDir}/build/ninja-release",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     }
   ],
   "buildPresets": [
     { "name": "ninja", "configurePreset": "ninja" },
-    { "name": "vs2022-debug", "configurePreset": "vs2022", "configuration": "Debug" },
-    { "name": "vs2022-release", "configurePreset": "vs2022", "configuration": "Release" }
+    { "name": "ninja-reldbg", "configurePreset": "ninja-reldbg" },
+    { "name": "ninja-release", "configurePreset": "ninja-release" }
   ]
 }

@@ -15,9 +15,15 @@ struct Vec2 {
   constexpr Vec2 operator+(const Vec2& o) const { return {x + o.x, y + o.y}; }
   constexpr Vec2 operator-(const Vec2& o) const { return {x - o.x, y - o.y}; }
   constexpr Vec2 operator*(float s) const { return {x * s, y * s}; }
+  constexpr Vec2 operator/(float s) const { return {x / s, y / s}; }
   Vec2& operator+=(const Vec2& o) {
     x += o.x;
     y += o.y;
+    return *this;
+  }
+  Vec2& operator/=(float s) {
+    x /= s;
+    y /= s;
     return *this;
   }
 
@@ -43,6 +49,10 @@ struct Vec2 {
     return {std::cos(radians), std::sin(radians)};
   }
 };
+
+constexpr float DistSquared(const Vec2& a, const Vec2& b) {
+  return (a - b).LengthSquared();
+}
 
 // The play field: a rectangle centered at the origin with the given half-
 // extents, topologically a torus -- a point leaving one edge re-enters at the
@@ -72,9 +82,7 @@ struct Vec3 {
     return Vec3{x + o.x, y + o.y, z + o.z};
   }
 
-  constexpr Vec3 operator*(float s) const {
-    return Vec3{x * s, y * s, z * s};
-  }
+  constexpr Vec3 operator*(float s) const { return Vec3{x * s, y * s, z * s}; }
 };
 
 struct Color {
