@@ -14,6 +14,10 @@ struct FlockSettings {
   float min_speed = 12.0f;
   float max_speed = 30.0f;
   float max_force = 60.0f;
+  float repulsion_margin = 10.0f;
+  float repulsion_weight = 2.0f;
+  float speed_spread = 4.0f;
+  float fov_degrees = 270.0f;
   float separation_weight = 1.5f;
   float alignment_weight = 1.0f;
   float cohesion_weight = 1.2f;
@@ -26,6 +30,7 @@ class Flock {
     se::Vec2 pos{};
     se::Vec2 vel{};
     se::Vec2 acc{};
+    float speed_offset = 0.0f;
   };
 
   Flock(const FlockSettings& settings, se::Bounds bounds);

@@ -54,11 +54,8 @@ constexpr float DistSquared(const Vec2& a, const Vec2& b) {
   return (a - b).LengthSquared();
 }
 
-// The play field: a rectangle centered at the origin with the given half-
-// extents, topologically a torus -- a point leaving one edge re-enters at the
-// opposite one. `Wrap` folds a position back inside. Lives here (not world.h)
-// so Ship/Torpedo -- which cannot include world.h -- can name it in Update and
-// wrap themselves, instead of World reaching in through a setter.
+// The play field: a rectangle centered at the origin with the given
+// half-extents
 struct Bounds {
   float half_w, half_h;
 
@@ -72,6 +69,31 @@ struct Bounds {
     else if (p.y < -half_h)
       p.y += 2.0f * half_h;
     return p;
+  }
+
+  constexpr Vec2 Clamp(Vec2 p) const {
+    if (p.x > half_w)
+      p.x = half_w;
+    else if (p.x < -half_w)
+      p.x = -half_w;
+    if (p.y > half_h)
+      p.y = half_h;
+    else if (p.y < -half_h)
+      p.y = -half_h;
+    return p;
+  }
+
+  // Repulsion force from walls
+  constexpr Vec2 RepulsionAt(Vec2 p, float margin) const {
+    return {AxisPush(p.x, half_w, margin), AxisPush(p.y, half_h, margin)};
+  }
+
+ private:
+  static constexpr float AxisPush(float v, float half, float margin) {
+    const float depth = margin - (half - (v > 0.0f ? v : -v));
+    if (depth <= 0.0f) return 0.0f;
+    const float res = depth < margin ? depth / margin : 1.0f;
+    return v > 0.0f ? -res : res;
   }
 };
 
