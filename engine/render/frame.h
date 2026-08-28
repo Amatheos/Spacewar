@@ -10,7 +10,7 @@ namespace se::render {
 class Texture;
 
 struct DrawCommand {
-  enum class Kind { Polygon, Circle, Ring, Rect, Textured };
+  enum class Kind { Polygon, Circle, Ring, Rect, RectFilled, Textured };
 
   Kind kind = Kind::Polygon;
   Vec2 pos{0, 0};
@@ -34,6 +34,7 @@ struct DrawCommand {
 struct Frame {
   Color clear_color{0.0f, 0.0f, 0.0f, 1.0f};
   Vec2 world_half{1.0f, 1.0f};
+  Vec2 view_center{0.0f, 0.0f};
   std::uint64_t tick = 0;
   const Texture* background = nullptr;
   std::vector<DrawCommand> commands;

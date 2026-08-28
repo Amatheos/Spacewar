@@ -144,9 +144,10 @@ bool Renderer::Init(GlProcLoader loader) {
   return true;
 }
 
-void Renderer::SetWorldView(float half_width, float half_height) {
-  view_half_width_ = half_width;
-  view_half_height_ = half_height;
+void Renderer::SetWorldView(Vec2 center, Vec2 half_extent) {
+  view_center_ = center;
+  view_half_width_ = half_extent.x;
+  view_half_height_ = half_extent.y;
   RebuildWorldProjection();
 }
 
@@ -163,7 +164,9 @@ void Renderer::RebuildWorldProjection() {
   } else {
     half_h = half_w / window_aspect;
   }
-  world_projection_ = Mat3::Ortho(-half_w, half_w, -half_h, half_h);
+  world_projection_ =
+      Mat3::Ortho(view_center_.x - half_w, view_center_.x + half_w,
+                  view_center_.y - half_h, view_center_.y + half_h);
 }
 
 void Renderer::Resize(int width, int height) {
@@ -222,7 +225,10 @@ void Renderer::Execute(const DrawCommand& cmd) {
       DrawRing(cmd.pos, cmd.radius, cmd.thickness, cmd.color);
       break;
     case DrawCommand::Kind::Rect:
-      DrawRect(cmd.pos, cmd.size, cmd.color);
+      DrawRect(cmd.pos, cmd.size, cmd.thickness, cmd.color);
+      break;
+    case DrawCommand::Kind::RectFilled:
+      DrawRectFilled(cmd.pos, cmd.size, cmd.color);
       break;
     case DrawCommand::Kind::Textured:
       DrawTexturedQuad(cmd.pos, cmd.size, cmd.uv_min, cmd.uv_max, *cmd.texture,
@@ -268,7 +274,21 @@ void Renderer::DrawRing(Vec2 center, float radius, float thickness,
   DrawVerts(GL_TRIANGLE_STRIP, band, model, color);
 }
 
-void Renderer::DrawRect(Vec2 pos, Vec2 size, const Color& color) {
+void Renderer::DrawRect(Vec2 pos, Vec2 size, float thickness,
+                        const Color& color) {
+  const float t = thickness * 0.5f;
+  const float ox0 = -t, oy0 = -t;
+  const float ox1 = size.x + t, oy1 = size.y + t;
+  const float ix0 = t, iy0 = t;
+  const float ix1 = std::max(ix0, size.x - t);
+  const float iy1 = std::max(iy0, size.y - t);
+  const std::vector<Vec2> band{{ox0, oy0}, {ix0, iy0}, {ox1, oy0}, {ix1, iy0},
+                               {ox1, oy1}, {ix1, iy1}, {ox0, oy1}, {ix0, iy1},
+                               {ox0, oy0}, {ix0, iy0}};
+  DrawVerts(GL_TRIANGLE_STRIP, band, Mat3::Translate(pos.x, pos.y), color);
+}
+
+void Renderer::DrawRectFilled(Vec2 pos, Vec2 size, const Color& color) {
   static const std::vector<Vec2> kUnitQuad{{0, 0}, {1, 0}, {1, 1}, {0, 1}};
   Mat3 model = Mat3::Translate(pos.x, pos.y) * Mat3::Scale(size.x, size.y);
   DrawVerts(GL_TRIANGLE_FAN, kUnitQuad, model, color);

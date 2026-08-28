@@ -57,6 +57,7 @@ int Engine::RunWindowed(const WindowConfig& win_cfg,
   platform::Window window(win_cfg.width, win_cfg.height, win_cfg.title);
   if (!window.ok()) return 1;
 
+  // Window needs to outlive game
   std::unique_ptr<Game> owned = std::move(game);
 
   render::Renderer renderer;
@@ -96,7 +97,8 @@ int Engine::RunWindowed(const WindowConfig& win_cfg,
       owned->BuildFrame(frame);
     }
 
-    renderer.SetWorldView(frame.world_half.x, frame.world_half.y);
+    renderer.SetWorldView(frame.view_center,
+                          {frame.world_half.x, frame.world_half.y});
     renderer.BeginFrame(frame.clear_color);
     {
       se::profiler::ScopedTimer t("Renderer::Submit");

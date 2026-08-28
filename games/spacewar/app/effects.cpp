@@ -117,6 +117,7 @@ void Effects::Update(float dt) {
 }
 
 void Effects::BuildInto(render::Frame& frame) const {
+  frame.commands.reserve(frame.commands.size() + particles_.size());
   for (const Particle& p : particles_) {
     const float t = p.age / p.lifespan;  // 0 at spawn, 1 at death
 

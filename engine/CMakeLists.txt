@@ -20,7 +20,8 @@ add_library(se_render STATIC
   render/shader.cpp
   render/texture.cpp
   render/font.cpp
-  render/renderer.cpp)
+  render/renderer.cpp
+  render/camera.cpp)
 target_link_libraries(se_render PUBLIC se_core PRIVATE glad stb se_warnings)
 
 add_library(se_platform STATIC

@@ -21,7 +21,7 @@ class Renderer {
 
   bool Init(GlProcLoader loader);
 
-  void SetWorldView(float half_width, float half_height);
+  void SetWorldView(Vec2 center, Vec2 half_extent);
 
   void Resize(int width, int height);
 
@@ -39,7 +39,9 @@ class Renderer {
 
   void DrawRing(Vec2 center, float radius, float thickness, const Color& color);
 
-  void DrawRect(Vec2 pos, Vec2 size, const Color& color);
+  void DrawRect(Vec2 pos, Vec2 size, float thickness, const Color& color);
+
+  void DrawRectFilled(Vec2 pos, Vec2 size, const Color& color);
 
   void DrawTexturedQuad(Vec2 pos, Vec2 size, Vec2 uv_min, Vec2 uv_max,
                         const Texture& tex, const Color& color);
@@ -67,6 +69,7 @@ class Renderer {
   Vec2 overlay_extent_{1.0f, 1.0f};
   float view_half_width_ = 100.0f;
   float view_half_height_ = 56.25f;
+  Vec2 view_center_ = {0.0f, 0.0f};
   int fb_width_ = 1;
   int fb_height_ = 1;
 };

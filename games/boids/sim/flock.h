@@ -14,7 +14,7 @@ struct FlockSettings {
   float min_speed = 12.0f;
   float max_speed = 30.0f;
   float max_force = 60.0f;
-  float repulsion_margin = 10.0f;
+  float repulsion_margin = 20.0f;
   float repulsion_weight = 2.0f;
   float speed_spread = 4.0f;
   float fov_degrees = 270.0f;

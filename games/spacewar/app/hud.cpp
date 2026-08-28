@@ -52,7 +52,7 @@ void Hud::BuildInto(render::Frame& frame, const sim::World& world) const {
                       : 1.0f;
 
     render::DrawCommand bg;
-    bg.kind = render::DrawCommand::Kind::Rect;
+    bg.kind = render::DrawCommand::Kind::RectFilled;
     bg.pos = {col_x, kPad + kTextH + kGap};
     bg.size = {kBarW, kBarH};
     bg.color = {0.15f, 0.15f, 0.20f, 0.6f};

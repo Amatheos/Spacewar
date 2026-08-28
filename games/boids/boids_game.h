@@ -3,6 +3,7 @@
 #include "app/flock_view.h"
 #include "engine/core/math.h"
 #include "engine/game.h"
+#include "engine/render/camera.h"
 #include "sim/flock.h"
 
 namespace boids {
@@ -21,6 +22,7 @@ class BoidsGame : public se::Game {
  private:
   sim::Flock flock_;
   app::FlockView view_;
+  se::render::Camera2D camera_{kWorldBounds};
   bool quit_ = false;
 };
 
