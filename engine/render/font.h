@@ -36,7 +36,7 @@ class Font {
 
   std::unique_ptr<Texture> texture_;
   std::vector<Glyph> glyphs_;
-  int first_char_ = 32;
+  int first_char_ = 32;  // ASCII space; ctor overwrites from kFirstChar
   float bake_px_ = 0.0f;
 };
 

@@ -6,11 +6,18 @@
 
 namespace se::render {
 
+namespace {
+
+constexpr int kRedChannels = 1;
+constexpr int kRgbaChannels = 4;
+
+}  // namespace
+
 std::unique_ptr<Texture> LoadTextureFile(const char* path) {
   int w = 0, h = 0, channels = 0;
-  unsigned char* pixels = stbi_load(path, &w, &h, &channels, 4);
+  unsigned char* pixels = stbi_load(path, &w, &h, &channels, kRgbaChannels);
   if (pixels == nullptr) return nullptr;
-  auto tex = std::make_unique<Texture>(w, h, 4, pixels);
+  auto tex = std::make_unique<Texture>(w, h, kRgbaChannels, pixels);
   stbi_image_free(pixels);
   return tex->ok() ? std::move(tex) : nullptr;
 }
@@ -18,10 +25,11 @@ std::unique_ptr<Texture> LoadTextureFile(const char* path) {
 Texture::Texture(int width, int height, int channels,
                  const unsigned char* pixels)
     : width_(width), height_(height) {
-  if (width <= 0 || height <= 0 || (channels != 1 && channels != 4)) {
+  if (width <= 0 || height <= 0 ||
+      (channels != kRedChannels && channels != kRgbaChannels)) {
     return;  // id_ stays 0 -> ok() == false
   }
-  GLenum format = (channels == 1) ? GL_RED : GL_RGBA;
+  GLenum format = (channels == kRedChannels) ? GL_RED : GL_RGBA;
 
   glGenTextures(1, &id_);
   glBindTexture(GL_TEXTURE_2D, id_);

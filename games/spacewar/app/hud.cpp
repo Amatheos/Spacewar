@@ -26,6 +26,12 @@ constexpr float kGap = 0.012f;   // score -> bar gap
 constexpr float kBarW = 0.18f;   // cooldown bar
 constexpr float kBarH = 0.022f;
 
+constexpr Color kBarBackground{0.15f, 0.15f, 0.20f, 0.6f};
+constexpr Color kClockColor{0.85f, 0.85f, 0.90f, 1.0f};
+constexpr Color kBannerColor{1.0f, 1.0f, 1.0f, 1.0f};
+constexpr float kBannerBaselineFactor = 0.35f;
+constexpr float kCountdownH = 0.28f;
+
 }  // namespace
 
 Hud::Hud(const char* font_path) : font_(font_path) {}
@@ -55,7 +61,7 @@ void Hud::BuildInto(render::Frame& frame, const sim::World& world) const {
     bg.kind = render::DrawCommand::Kind::RectFilled;
     bg.pos = {col_x, kPad + kTextH + kGap};
     bg.size = {kBarW, kBarH};
-    bg.color = {0.15f, 0.15f, 0.20f, 0.6f};
+    bg.color = kBarBackground;
     frame.overlay.push_back(bg);
 
     render::DrawCommand fill = bg;
@@ -69,18 +75,19 @@ void Hud::BuildInto(render::Frame& frame, const sim::World& world) const {
   float clock_w = font_.MeasureWidth(clock, kTextH);
   font_.AppendText(frame, clock,
                    {extent.x * 0.5f - clock_w * 0.5f, kPad + kTextH}, kTextH,
-                   {0.85f, 0.85f, 0.90f, 1.0f});
+                   kClockColor);
 
   // Big centered banner: the between-round countdown, then GAME OVER.
   auto center = [&](std::string_view text, float h) {
     float w = font_.MeasureWidth(text, h);
     font_.AppendText(frame, text,
-                     {extent.x * 0.5f - w * 0.5f, extent.y * 0.5f + h * 0.35f},
-                     h, {1.0f, 1.0f, 1.0f, 1.0f});
+                     {extent.x * 0.5f - w * 0.5f,
+                      extent.y * 0.5f + h * kBannerBaselineFactor},
+                     h, kBannerColor);
   };
   if (world.game_phase() == sim::World::GamePhase::Countdown) {
     int n = static_cast<int>(std::ceil(world.respawn_timer()));
-    if (n > 0) center(std::to_string(n), 0.28f);
+    if (n > 0) center(std::to_string(n), kCountdownH);
   }
 }
 

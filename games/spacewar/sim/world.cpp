@@ -73,7 +73,8 @@ void World::SimulationStep(float dt, const GameInput& in) {
 
       const float mid = settings_->hyperspace.anim_duration_sec / 2;
       if (before > mid && hs.timer <= mid) {
-        std::uniform_int_distribution<int> roll(0, 99);
+        constexpr int kPercentSides = 100;
+        std::uniform_int_distribution<int> roll(0, kPercentSides - 1);
         if (roll(rng_) <
             settings_->hyperspace.base_fail_percent +
                 hs.uses * settings_->hyperspace.fail_step_percent) {

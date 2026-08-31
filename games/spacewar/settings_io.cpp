@@ -11,6 +11,18 @@
 #include "app/options.h"
 #include "sim/settings.h"
 
+namespace {
+
+constexpr double kSaveRounding = 1000.0;
+
+// Snap to 3 decimals: writes the clean value (0.35, not 0.349999...) and
+// stops repeated save/load from drifting the float downward.
+void WriteNum(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w, float v) {
+  w.Double(std::round(v * kSaveRounding) / kSaveRounding);
+}
+
+}  // namespace
+
 namespace spacewar::sim {
 
 using namespace se;
@@ -127,9 +139,7 @@ bool LoadSimSettings(const char* path, SimSettings& out) {
 bool SaveSimSettings(const char* path, const SimSettings& in) {
   rapidjson::StringBuffer buf;
   rapidjson::PrettyWriter<rapidjson::StringBuffer> w(buf);
-  // Snap to 3 decimals: writes the clean value (0.35, not 0.349999...) and
-  // stops repeated save/load from drifting the float downward.
-  auto num = [&](float v) { w.Double(std::round(v * 1000.0) / 1000.0); };
+  auto num = [&](float v) { WriteNum(w, v); };
   auto vec2 = [&](const Vec2& v) {
     w.StartArray();
     num(v.x);
@@ -265,7 +275,7 @@ bool LoadAppOptions(const char* path, AppOptions& out) {
 bool SaveAppOptions(const char* path, const AppOptions& in) {
   rapidjson::StringBuffer buf;
   rapidjson::PrettyWriter<rapidjson::StringBuffer> w(buf);
-  auto num = [&](float v) { w.Double(std::round(v * 1000.0) / 1000.0); };
+  auto num = [&](float v) { WriteNum(w, v); };
   w.StartObject();
   w.Key("master_volume");
   num(in.master_volume);

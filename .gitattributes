@@ -1,0 +1,20 @@
+# Normalize every text file to LF in the repository. Git converts on checkout
+# for anyone working on Windows, so a CRLF editor stays usable. Eight files
+# predate the ADR-011 Linux migration and still carry CRLF in the index; see
+# the renormalize note in the commit that added this file.
+* text=auto eol=lf
+
+# Binary assets: never line-ending-converted, never diffed as text.
+*.png binary
+*.wav binary
+*.ttf binary
+
+# Give diff hunk headers the enclosing function name (the text after @@).
+*.c   diff=cpp
+*.h   diff=cpp
+*.cpp diff=cpp
+
+# Generated GL 3.3 core loader, kept in-tree because it has no upstream to
+# fetch (external/CMakeLists.txt). Not ours to review, and it should not count
+# toward the repository's language statistics.
+external/glad/** linguist-vendored

@@ -8,6 +8,7 @@ namespace se {
 inline constexpr float kPi = 3.14159265358979323846f;
 inline constexpr float kTwoPi = 2.0f * kPi;
 inline constexpr float kHalfPi = 0.5f * kPi;
+inline constexpr float kDegToRad = kPi / 180.0f;  // pi radians == 180 degrees
 
 struct Vec2 {
   float x, y;

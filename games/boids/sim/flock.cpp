@@ -60,8 +60,9 @@ Flock::Flock(const FlockSettings& settings, se::Bounds bounds)
 void Flock::Update(float dt) {
   se::profiler::ScopedTimer t("Boids sim tick");
   const float r2 = settings_.perception_radius * settings_.perception_radius;
-  const float fov_cos =
-      std::cos(settings_.fov_degrees * 0.5f * se::kPi / 180.0f);
+  // fov_degrees is the full cone; the dot-product test below compares against
+  // its half-angle.
+  const float fov_cos = std::cos(settings_.fov_degrees * 0.5f * se::kDegToRad);
 
   for (std::size_t i = 0; i < boids_.size(); i++) {
     const Boid& a = boids_[i];

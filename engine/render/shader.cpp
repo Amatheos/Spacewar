@@ -7,6 +7,8 @@
 namespace se::render {
 namespace {
 
+constexpr int kInfoLogSize = 512;
+
 // Compiles one stage; returns 0 (after logging) on failure so the caller aborts
 // construction instead of proceeding with a broken program.
 unsigned int CompileShader(unsigned int type, const char* src) {
@@ -16,7 +18,7 @@ unsigned int CompileShader(unsigned int type, const char* src) {
   int ok;
   glGetShaderiv(id, GL_COMPILE_STATUS, &ok);
   if (!ok) {
-    char log[512];
+    char log[kInfoLogSize];
     glGetShaderInfoLog(id, sizeof(log), nullptr, log);
     fprintf(stderr, "shader compile failed: %s\n", log);
     glDeleteShader(id);
@@ -46,7 +48,7 @@ Shader::Shader(const char* vertex_src, const char* fragment_src) {
   int ok;
   glGetProgramiv(program_, GL_LINK_STATUS, &ok);
   if (!ok) {
-    char log[512];
+    char log[kInfoLogSize];
     glGetProgramInfoLog(program_, sizeof(log), nullptr, log);
     fprintf(stderr, "shader linking failed: %s\n", log);
     glDeleteProgram(program_);

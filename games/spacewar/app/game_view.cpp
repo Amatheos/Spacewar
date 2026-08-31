@@ -5,10 +5,10 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "app/player_style.h"
 #include "engine/core/math.h"
 #include "sim/player.h"
 #include "sim/settings.h"
-#include "app/player_style.h"
 
 namespace spacewar::app {
 
@@ -23,7 +23,7 @@ constexpr float kShipScale = 3.5f;
 // zero at the midpoint teleport, then explodes back out. Sized entirely off the
 // jump timer, so it carries no state of its own.
 constexpr float kRingMaxRadius = 9.0f;
-constexpr float kRingThickness = 1.2f;                 // band width, world units
+constexpr float kRingThickness = 1.2f;  // band width, world units
 constexpr Color kRingColor{0.70f, 0.55f, 1.0f, 1.0f};  // violet, additive glow
 
 constexpr float kTorpedoRadius = 0.8f;
@@ -47,10 +47,18 @@ constexpr float kFlameCoreScale = 0.6f;
 constexpr float kFlameOuterAlpha = 0.40f;
 constexpr float kFlameCoreAlpha = 0.90f;
 
+constexpr std::uint32_t kHashMultiplier = 2654435761u;
+constexpr int kHashShift = 15;
+constexpr std::uint32_t kHashMask = 0xffffu;
+constexpr float kHashMaskScale = 65535.0f;
+
+constexpr float kFlickerBase = 0.75f;
+constexpr float kFlickerAmplitude = 0.35f;
+
 float Flicker(std::uint64_t tick) {
-  std::uint32_t h = static_cast<std::uint32_t>(tick) * 2654435761u;
-  h ^= h >> 15;
-  return (h & 0xffffu) / 65535.0f;
+  std::uint32_t h = static_cast<std::uint32_t>(tick) * kHashMultiplier;
+  h ^= h >> kHashShift;
+  return (h & kHashMask) / kHashMaskScale;
 }
 
 }  // namespace
@@ -64,10 +72,12 @@ void GameView::BuildInto(render::Frame& frame, const sim::World& world,
     float timer = world.hyperspace_timer(static_cast<sim::Player>(i));
 
     if (ships[i].thrusting() && timer <= 0.0f) {
-      const float flick = 0.75f + 0.35f * Flicker(world.tick());
+      const float flick =
+          kFlickerBase + kFlickerAmplitude * Flicker(world.tick());
       const Color ex = kPlayerStyles[i].exhaust;
-      const Vec2 port = ships[i].pos() + Vec2::FromAngle(ships[i].angle()) *
-                                             (kPlayerStyles[i].engine * kShipScale);
+      const Vec2 port =
+          ships[i].pos() + Vec2::FromAngle(ships[i].angle()) *
+                               (kPlayerStyles[i].engine * kShipScale);
       render::DrawCommand outer;
       outer.kind = render::DrawCommand::Kind::Polygon;
       outer.pos = port;

@@ -9,7 +9,7 @@
 namespace boids::sim {
 
 struct FlockSettings {
-  int count = 500;
+  int count = 1000;
   float perception_radius = 6.0f;
   float min_speed = 12.0f;
   float max_speed = 30.0f;

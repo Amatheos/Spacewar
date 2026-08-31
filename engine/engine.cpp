@@ -13,6 +13,8 @@ namespace se {
 
 namespace {
 
+constexpr float kMaxFrameDelta = 0.25f;
+
 class WindowDisplay : public Display {
  public:
   explicit WindowDisplay(platform::Window& w) : window_(w) {}
@@ -84,9 +86,11 @@ int Engine::RunWindowed(const WindowConfig& win_cfg,
     prev = now;
 
     UpdateInput(window.KeysDown());
-    accumulator += std::min(dt, 0.25f);
+    accumulator += std::min(dt, kMaxFrameDelta);
     while (accumulator >= step) {
       owned->Update(step, input_);
+      input_.pressed.fill(false);
+      input_.released.fill(false);
       accumulator -= step;
     }
 
@@ -115,8 +119,9 @@ int Engine::RunWindowed(const WindowConfig& win_cfg,
 
 void Engine::UpdateInput(const std::array<bool, kKeyCount>& key_state) {
   for (std::size_t i = 0; i < kKeyCount; ++i) {
-    input_.pressed[i] = key_state[i] && !input_.down[i];
-    input_.released[i] = !key_state[i] && input_.down[i];
+    input_.pressed[i] = input_.pressed[i] || (key_state[i] && !input_.down[i]);
+    input_.released[i] =
+        input_.released[i] || (!key_state[i] && input_.down[i]);
   }
   input_.down = key_state;
 }

@@ -8,7 +8,7 @@
 
 namespace boids {
 inline constexpr float kUpdateHz = 120.0f;
-inline constexpr se::Bounds kWorldBounds{160.0f, 90.0f};
+inline constexpr se::Bounds kWorldBounds{320.0f, 180.0f};
 
 class BoidsGame : public se::Game {
  public:

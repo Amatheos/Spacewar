@@ -67,6 +67,7 @@ class Renderer {
   Mat3 world_projection_;
   Mat3 screen_projection_;  // isotropic screen space for the overlay
   Vec2 overlay_extent_{1.0f, 1.0f};
+  // Placeholder 16:9 view; SetWorldView replaces it before the first draw.
   float view_half_width_ = 100.0f;
   float view_half_height_ = 56.25f;
   Vec2 view_center_ = {0.0f, 0.0f};

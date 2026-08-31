@@ -6,7 +6,7 @@
 namespace se::render {
 
 struct CameraSettings {
-  float pan_speed = 160.0f;
+  float pan_speed = 360.0f;
   float zoom_rate = 1.25f;
   float min_zoom = 0.25f;
   float max_zoom = 8.0f;

@@ -25,6 +25,30 @@ constexpr float kMatchStep = 15.0f;
 constexpr float kMatchMin = 30.0f;
 constexpr float kMatchMax = 600.0f;
 
+constexpr float kPercentScale = 100.0f;
+
+constexpr float kTitleY = 0.32f;
+constexpr float kTitleH = 0.16f;
+constexpr float kMenuFirstY = 0.56f;
+constexpr float kRowStep = 0.10f;
+constexpr float kSettingsTitleY = 0.24f;
+constexpr float kSettingsTitleH = 0.10f;
+constexpr float kSettingsFirstY = 0.50f;
+constexpr float kGameOverY = 0.42f;
+constexpr float kGameOverH = 0.12f;
+constexpr float kHintFirstY = 0.56f;
+constexpr float kHintStep = 0.07f;
+constexpr float kHintH = 0.05f;
+
+enum MenuRow { kNewGame, kSettingsEntry, kQuit, kMenuRowCount };
+enum SettingsRow {
+  kVolume,
+  kMatchDuration,
+  kFullscreen,
+  kBack,
+  kSettingsRowCount
+};
+
 enum class Clip { None, Fire, Explosion, Hyperspace, Beep, Go, kCount };
 
 Clip ClipFor(sim::GameEvent::Kind kind) {
@@ -137,16 +161,16 @@ void App::HandleMenu(const MenuInput& in) {
 
   switch (screen_) {
     case Screen::Menu: {
-      constexpr int kCount = 3;
+      constexpr int kCount = kMenuRowCount;
       if (up) menu_index_ = (menu_index_ + kCount - 1) % kCount;
       if (down) menu_index_ = (menu_index_ + 1) % kCount;
       if (select) {
-        if (menu_index_ == 0) {
+        if (menu_index_ == kNewGame) {
           screen_ = Screen::Playing;
           world_ = sim::World(settings_);
-        } else if (menu_index_ == 1) {
+        } else if (menu_index_ == kSettingsEntry) {
           screen_ = Screen::Settings;
-          settings_index_ = 0;
+          settings_index_ = kVolume;
         } else {
           quit_ = true;
         }
@@ -154,26 +178,26 @@ void App::HandleMenu(const MenuInput& in) {
       break;
     }
     case Screen::Settings: {
-      constexpr int kCount = 4;
+      constexpr int kCount = kSettingsRowCount;
       if (up) settings_index_ = (settings_index_ + kCount - 1) % kCount;
       if (down) settings_index_ = (settings_index_ + 1) % kCount;
-      if (settings_index_ == 0 && (left || right)) {
+      if (settings_index_ == kVolume && (left || right)) {
         options_.master_volume = std::clamp(
             options_.master_volume + (right ? kVolumeStep : -kVolumeStep), 0.0f,
             1.0f);
         audio_.SetVolume(options_.master_volume);
         SaveAppOptions(SPACEWAR_OPTIONS_PATH, options_);
-      } else if (settings_index_ == 1 && (left || right)) {
+      } else if (settings_index_ == kMatchDuration && (left || right)) {
         settings_.match.match_sec = std::clamp(
             settings_.match.match_sec + (right ? kMatchStep : -kMatchStep),
             kMatchMin, kMatchMax);
         sim::SaveSimSettings(SPACEWAR_SETTINGS_PATH, settings_);
-      } else if (settings_index_ == 2 && (left || right)) {
+      } else if (settings_index_ == kFullscreen && (left || right)) {
         options_.fullscreen = right;
         SaveAppOptions(SPACEWAR_OPTIONS_PATH, options_);
         if (fullscreen_handler_) fullscreen_handler_(options_.fullscreen);
       }
-      if (back || (select && settings_index_ == 3)) screen_ = Screen::Menu;
+      if (back || (select && settings_index_ == kBack)) screen_ = Screen::Menu;
       break;
     }
     case Screen::Playing: {
@@ -219,32 +243,36 @@ void App::DrawMenu(render::Frame& frame) const {
     float vw = font_.MeasureWidth(value, kRowH);
     font_.AppendText(frame, value, {cx + kRowHalf - vw, y}, kRowH, c);
   };
+  auto menu_y = [](int i) { return kMenuFirstY + kRowStep * i; };
+  auto row_y = [](int i) { return kSettingsFirstY + kRowStep * i; };
 
   switch (screen_) {
     case Screen::Menu:
       frame.background = starscape_.get();
-      line("SPACEWAR", 0.32f, 0.16f, kSel);
-      line("NEW GAME", 0.56f, 0.06f, tint(menu_index_ == 0));
-      line("SETTINGS", 0.66f, 0.06f, tint(menu_index_ == 1));
-      line("QUIT", 0.76f, 0.06f, tint(menu_index_ == 2));
+      line("SPACEWAR", kTitleY, kTitleH, kSel);
+      line("NEW GAME", menu_y(kNewGame), kRowH, tint(menu_index_ == kNewGame));
+      line("SETTINGS", menu_y(kSettingsEntry), kRowH,
+           tint(menu_index_ == kSettingsEntry));
+      line("QUIT", menu_y(kQuit), kRowH, tint(menu_index_ == kQuit));
       break;
     case Screen::Settings: {
       frame.background = starscape_.get();
-      line("SETTINGS", 0.24f, 0.10f, kSel);
-      int pct = static_cast<int>(options_.master_volume * 100.0f + 0.5f);
-      row("VOLUME", std::to_string(pct) + "%", 0.50f, settings_index_ == 0);
-      row("MATCH DURATION", FormatClock(settings_.match.match_sec), 0.60f,
-          settings_index_ == 1);
-      row("FULLSCREEN", options_.fullscreen ? "On" : "Off", 0.70f,
-          settings_index_ == 2);
-      line("BACK", 0.80f, 0.06f, tint(settings_index_ == 3));
+      line("SETTINGS", kSettingsTitleY, kSettingsTitleH, kSel);
+      int pct = static_cast<int>(options_.master_volume * kPercentScale + 0.5f);
+      row("VOLUME", std::to_string(pct) + "%", row_y(kVolume),
+          settings_index_ == kVolume);
+      row("MATCH DURATION", FormatClock(settings_.match.match_sec),
+          row_y(kMatchDuration), settings_index_ == kMatchDuration);
+      row("FULLSCREEN", options_.fullscreen ? "On" : "Off", row_y(kFullscreen),
+          settings_index_ == kFullscreen);
+      line("BACK", row_y(kBack), kRowH, tint(settings_index_ == kBack));
       break;
     }
     case Screen::Playing:
       if (game_over_) {
-        line("GAME OVER", 0.42f, 0.12f, kSel);
-        line("PRESS ENTER TO RESTART", 0.56f, 0.05f, kSel);
-        line("ESC RETURN TO MENU", 0.63f, 0.05f, kSel);
+        line("GAME OVER", kGameOverY, kGameOverH, kSel);
+        line("PRESS ENTER TO RESTART", kHintFirstY, kHintH, kSel);
+        line("ESC RETURN TO MENU", kHintFirstY + kHintStep, kHintH, kSel);
       }
       break;
   }
